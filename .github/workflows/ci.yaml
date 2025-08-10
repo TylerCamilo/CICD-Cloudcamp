@@ -1,3 +1,4 @@
+name: CloudCamp CI
 on:
   push:
 
@@ -5,10 +6,8 @@ jobs:
   hello_world:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Hello word with minimus paramenters"
-
-#Clone teh repository
-
+      - run: echo "Hello world"      
+        #Clone teh repository
       - name: "checkout"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #version 4.2.2
         #recomendaicon siempre poner el sha, lo obtienes en el ultimo release y mirar el sha en la url
@@ -20,4 +19,30 @@ jobs:
     
       - uses: hashicorp/setup-terraform@v3
       - run: terraform version
+  #generar una dependencia del step hello_world
+  job-depends:
+    runs-on: ubuntu-latest
+    needs: [hello_world]
+    steps:
+      - run: echo "${{  github.actor  }}"
 
+  Terraform:
+    name: Terraform CI
+    runs-on: ubuntu-latest
+
+    env:
+      
+      AWS_ACCES_KEY_ID: ${{  secrets.AWS_ACCES_KEY_ID  }}
+      AWS_SECRET_ACCES_KEY: ${{  secrets.AWS_SECRET_ACCES_KEY  }}
+
+    steps:
+      - name: "checkout"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #version 4.2.2
+      
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: "terraform init"
+        run:  terraform init
+
+      - name: terraform plan
+        run: terraform plan
