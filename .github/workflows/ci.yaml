@@ -6,3 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Hello word with minimus paramenters"
+
+#Clone teh repository
+
+      - name: "checkout"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #version 4.2.2
+        #recomendaicon siempre poner el sha, lo obtienes en el ultimo release y mirar el sha en la url
+        
+      - name: "print files"
+        run: | 
+          ls
+          pwd
+          
