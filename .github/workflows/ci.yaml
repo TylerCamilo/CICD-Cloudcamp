@@ -6,9 +6,14 @@ on:
       should_deploy:
         type: boolean
       text_field:
+        name: Message
         type: String
         required: true
         default: test
+
+env:
+  SHOULD_DEPLOY: ${{  github.event_name == 'push' && true || inputs.should_deploy  }}
+  MESSAGE: ${{  github.event_name ==  'push' && 'push_event' || inputs.text_field }}
 
 
 jobs:
@@ -31,11 +36,11 @@ jobs:
 
   #generar una dependencia del step hello_world
   job-depends:
-    if: ${{  inputs.should_deploy  }}
+    if: ${{  env.SHOULD_DEPLOY == True  }}
     runs-on: ubuntu-latest
     needs: [hello_world]
     steps:
-      - run: echo "${{  github.actor  }}"
+      - run: echo "${{  github.actor  }} - $MESSAGE"
 
   Terraform:
     name: Terraform CI
