@@ -1,67 +1,69 @@
-name: Cloudcamp CI
+name: CloudCamp CI
 on:
   push:
-  workflow_dispatch: 
+  workflow_dispatch:
     inputs:
-      should_deploy: 
+      should_deploy:
         type: boolean
-
       text_field:
         name: Message
-        type: string
+        type: String
         required: true
         default: test
 
-env: 
-  SHOULD_DEPLOY: ${{ github.event_name == 'push' && true || inputs.should_deploy }}
+env:
+  SHOULD_DEPLOY: ${{  github.event_name == 'push' && true || inputs.should_deploy  }}
   MESSAGE: >-
-    ${{ github.event_name == 'push' && 'push_event'
-        || github.event_name == 'pull_request' && 'pull_request'
-        || inputs.text_field
-    }}
-
-
+    ${{  github.event_name ==  'push' && 'push_event' 
+         || github.event_name == 'pull_request' && 'pull_request'
+         || inputs.text_field 
+     }}
 jobs:
   hello_world:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Hello World"
+      - run: echo "Hello world"      
+        #Clone teh repository
       - name: "checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #Version 4.2.2
-
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #version 4.2.2
+        #recomendaicon siempre poner el sha, lo obtienes en el ultimo release y mirar el sha en la url
+        
       - name: "print files"
-        run: |
+        run: | 
           ls
           pwd
+    
       - uses: hashicorp/setup-terraform@v3
       - run: terraform version
-  job_depends:
-    #if: ${{ github.env.SHOULD_DEPLOY == 'true' }}
-    if: ${{ github.event.inputs.should_deploy == true }}
+
+  #generar una dependencia del step hello_world
+  job-depends:
+    #if: ${{  env.SHOULD_DEPLOY == true  }}
     runs-on: ubuntu-latest
     needs: [hello_world]
-    steps: 
-      - run: | 
-          echo "${{ github.actor }} - $MESSAGE"
-          if [[ ${{ env.SHOULD_DEPLOY }} == "true" ]]; then 
-            echo "SHOULD DEPLOY"
-          fi
+    steps:
+      - run: echo "${{  github.actor  }} - $MESSAGE"
 
-  terraform: 
-    name: "Terraform CI :rocket:" 
+  Terraform:
+    name: Terraform CI
     runs-on: ubuntu-latest
-    env: 
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    steps: 
+
+    env:
+      #TERNER EN CUENTA NOMRES EN EL REPOSITORIO
+      AWS_ACCESS_KEY_ID: ${{  secrets.AWS_ACCESS_KEY_ID  }}
+      AWS_SECRET_ACCESS_KEY: ${{  secrets.AWS_SECRET_ACCESS_KEY  }}
+
+    steps:
       - name: "checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #Version 4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #version 4.2.2
+      
       - uses: hashicorp/setup-terraform@v3
+
       - name: terraform init
-        run: terraform init
+        run:  terraform init
+
       - name: terraform plan
         run: terraform plan -out tfplan
-      - name: "terraform apply 🚀" 
+
+      - name: "terraform plan apply :rocket"
         run: terraform apply tfplan
-
-
