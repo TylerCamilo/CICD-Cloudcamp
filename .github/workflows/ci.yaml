@@ -23,6 +23,7 @@ jobs:
     
       - uses: hashicorp/setup-terraform@v3
       - run: terraform version
+      
   #generar una dependencia del step hello_world
   job-depends:
     if: ${{  inputs.should_deploy  }}
