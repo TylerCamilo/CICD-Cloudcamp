@@ -13,9 +13,11 @@ on:
 
 env:
   SHOULD_DEPLOY: ${{  github.event_name == 'push' && true || inputs.should_deploy  }}
-  MESSAGE: ${{  github.event_name ==  'push' && 'push_event' || inputs.text_field }}
-
-
+  MESSAGE: >-
+    ${{  github.event_name ==  'push' && 'push_event' 
+         || github.event_name == 'pull_request' && 'pull_request'
+         || inputs.text_field 
+     }}
 jobs:
   hello_world:
     runs-on: ubuntu-latest
@@ -61,4 +63,7 @@ jobs:
         run:  terraform init
 
       - name: "terraform plan"
-        run: terraform plan
+        run: terraform plan -out tfplan
+
+      - name: "terraform plan apply :rocket"
+        run: terraform apply tfplan
