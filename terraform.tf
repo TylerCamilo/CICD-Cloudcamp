@@ -13,10 +13,10 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "example" {
-  bucket = "284698404434_camilo_carrillo"
+  bucket = "284698404434-camilo-carrillo"
 
   tags = {
-    Owner  = "dafegave"
+    Owner  = "camilocarrillo"
     Bootcamp = "devops"
   }
 }
